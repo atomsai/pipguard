@@ -1,10 +1,12 @@
 # pipguard by AtomsAI
 
+[![Tests](https://github.com/atomsai/pipguard/actions/workflows/tests.yml/badge.svg)](https://github.com/atomsai/pipguard/actions/workflows/tests.yml)
+
 **Scan Python packages for supply-chain malware before install. Reduce blast radius when running untrusted tools.**
 
 pipguard is a local-only, zero-dependency Python CLI that catches obvious supply-chain attacks — executable `.pth` files, import-time exfiltration, credential harvesting, obfuscated payloads — before they reach your environment.
 
-Maintained & managed by [AtomsAI.com](https://atomsai.com).
+Maintained & managed by [AtomsAI.com](https://atomsai.com) ([x.com/ai_atoms](https://x.com/ai_atoms)).
 
 ## Why
 
@@ -24,6 +26,17 @@ Recent supply-chain incidents (PyPI typosquatting, compromised maintainer accoun
 
 ```bash
 pip install -e ".[dev]"
+```
+
+One-line runner options:
+
+```bash
+uvx --from git+https://github.com/atomsai/pipguard.git pipguard --help
+```
+
+```bash
+pipx install git+https://github.com/atomsai/pipguard.git
+pipguard --help
 ```
 
 Or just clone and run directly:
@@ -211,6 +224,17 @@ pipguard env-audit --json-out audit.json
 pipguard run --dry-run --json-out run-report.json -- echo hello
 ```
 
+## Release
+
+- Current release: `v0.1.0`
+- Release notes: see [`CHANGELOG.md`](CHANGELOG.md)
+
+### Clean-install validation
+
+The MVP has been validated via clean-install style runs using:
+- `pipx install <repo-spec>` + CLI smoke tests
+- `uvx --from <repo-spec> pipguard ...` + benign/malicious fixture scans
+
 ## Development
 
 ```bash
@@ -288,6 +312,10 @@ Each detector is independent and composable. The `chain_correlator` upgrades sev
 - More IOC packs for incident-driven response workflows.
 - Policy files for team-wide CI enforcement.
 - SARIF output for native code-scanning integration.
+
+## Launch Assets
+
+- Sample blocked output for screenshots/posts: [`assets/blocked-install-output.txt`](assets/blocked-install-output.txt)
 
 ## License
 

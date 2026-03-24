@@ -1,0 +1,11 @@
+BLOCKED [critical]
+Package: litellm==1.82.8
+Blocked artifacts and reasons:
+  • Artifact: litellm-1.82.8-py3-none-any.whl
+    Why blocked:
+      - Executable .pth file found
+      - Enumerates environment variables
+      - Reads sensitive local credential paths
+      - Sends data over outbound network sinks
+      - Contains function-level source-to-sink secret exfil chain
+Nothing was installed.
