@@ -4,7 +4,7 @@
 
 pipguard is a local-only, zero-dependency Python CLI that catches obvious supply-chain attacks — executable `.pth` files, import-time exfiltration, credential harvesting, obfuscated payloads — before they reach your environment.
 
-Maintained & managed by [AtomsAI.com](https://x.com/ai_atoms).
+Maintained & managed by [AtomsAI.com](https://atomsai.com).
 
 ## Why
 
