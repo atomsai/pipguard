@@ -12,6 +12,28 @@ Maintained & managed by [AtomsAI.com](https://atomsai.com) ([x.com/ai_atoms](htt
 
 Recent supply-chain incidents (PyPI typosquatting, compromised maintainer accounts, malicious startup hooks) have shown that `pip install` is an implicit trust decision. pipguard adds a verification step between download and install, and provides tools to audit and contain blast radius in your development environment.
 
+### LiteLLM `1.82.8` compromise case
+
+The LiteLLM PyPI release `1.82.8` became a high-visibility example of why pre-install package scanning matters. The reported behavior was not just a dependency hygiene issue or a known CVE. It was a live supply-chain compromise pattern: startup-hook execution, credential discovery, and outbound data theft.
+
+Community reports described the release as containing a malicious `litellm_init.pth` startup hook with base64-encoded instructions designed to collect credentials and exfiltrate them to a remote server.
+
+> "LiteLLM HAS BEEN COMPROMISED, DO NOT UPDATE. We just discovered that LiteLLM pypi release 1.82.8. It has been compromised, it contains litellm_init.pth with base64 encoded instructions to send all the credentials it can find to remote server + self-replicate."  
+> Source: Daniel Hnyk ([tweet](https://x.com/hnykda/status/2036414330267193815))
+
+Why this matters:
+
+- `.pth` files execute automatically during Python startup, which means damage can happen before a developer notices anything unusual.
+- Credential theft targets the exact materials most AI and infra-heavy Python environments carry: API keys, cloud credentials, SSH material, shell history, and cluster configuration.
+- A compromised package can affect both install-time trust and runtime blast radius, which is why `pipguard` includes both package scanning and environment containment commands.
+
+Public discussion and incident context:
+
+- Daniel Hnyk warning about the compromised LiteLLM `1.82.8` release: [x.com/hnykda/status/2036414330267193815](https://x.com/hnykda/status/2036414330267193815)
+- Broader public discussion from Andrej Karpathy: [x.com/karpathy/status/2036487306585268612](https://x.com/karpathy/status/2036487306585268612)
+
+`pipguard` is designed specifically for this class of attack: suspicious startup hooks, obfuscated payloads, environment enumeration, sensitive path reads, IOC matches, and source-to-sink exfiltration chains.
+
 ## What It Does
 
 | Command | Purpose |
