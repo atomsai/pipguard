@@ -25,7 +25,7 @@ Recent supply-chain incidents (PyPI typosquatting, compromised maintainer accoun
 ## Install
 
 ```bash
-pip install -e ".[dev]"
+python3 -m pip install -e ".[dev]"
 ```
 
 One-line runner options:
@@ -44,8 +44,10 @@ Or just clone and run directly:
 ```bash
 git clone https://github.com/AtomsAI/pipguard.git
 cd pipguard
-python -m pipguard --help
+python3 -m pipguard --help
 ```
+
+> macOS note: many systems do not provide `python` by default. Prefer `python3` in commands.
 
 ## Quick Start
 
@@ -83,10 +85,10 @@ pipguard env-audit --json-out audit.json
 
 ```bash
 # Default: only PATH, HOME, LANG, TERM inherited
-pipguard run -- python my_script.py
+pipguard run -- python3 my_script.py
 
 # Allow specific env vars
-pipguard run --allow-env OPENAI_API_KEY -- python agent.py
+pipguard run --allow-env OPENAI_API_KEY -- python3 agent.py
 
 # Use a named profile
 pipguard run --profile claude-code -- claude
@@ -95,7 +97,7 @@ pipguard run --profile claude-code -- claude
 pipguard run --dry-run -- node server.js
 
 # Strict mode (only PATH and HOME)
-pipguard run --strict --allow-env ANTHROPIC_API_KEY -- python agent.py
+pipguard run --strict --allow-env ANTHROPIC_API_KEY -- python3 agent.py
 ```
 
 ## Cheatsheet
@@ -114,14 +116,14 @@ pipguard doctor --ioc litellm-march-2026
 pipguard env-audit
 
 # Run tool with minimal env inheritance
-pipguard run --allow-env OPENAI_API_KEY -- python app.py
+pipguard run --allow-env OPENAI_API_KEY -- python3 app.py
 
 # Dry-run to preview inherited vs blocked vars
 pipguard run --profile mcp-server --dry-run -- my_mcp_server
 
 # --- Remove pipguard ---
 # If installed with pip:
-python -m pip uninstall pipguard
+python3 -m pip uninstall pipguard
 
 # If installed with pipx:
 pipx uninstall pipguard
@@ -239,7 +241,7 @@ The MVP has been validated via clean-install style runs using:
 
 ```bash
 # Install dev dependencies
-pip install -e ".[dev]"
+python3 -m pip install -e ".[dev]"
 
 # Run tests
 make test
@@ -256,6 +258,81 @@ make format
 # Run demo
 make demo
 ```
+
+## Troubleshooting
+
+### `zsh: command not found: python`
+
+Use `python3` instead of `python`:
+
+```bash
+python3 --version
+python3 -m pip install -e ".[dev]"
+python3 -m pipguard --help
+```
+
+### `zsh: command not found: pipguard`
+
+You likely have not installed `pipguard` into your current environment, or your venv is not active.
+
+```bash
+# Option A: local venv
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e ".[dev]"
+python3 -m pipguard --help
+
+# Option B: pipx global tool
+pipx install git+https://github.com/atomsai/pipguard.git
+pipguard --help
+```
+
+### `pipx` or `uvx` not found
+
+Install one of them first:
+
+```bash
+python3 -m pip install pipx uv
+python3 -m pipx ensurepath
+```
+
+Then restart your terminal and retry.
+
+### `Error: Unsupported archive format`
+
+`pipguard scan` supports wheels, sdists, and directories. Ensure your file is one of:
+- `.whl`
+- `.tar.gz`, `.tgz`, `.tar.bz2`
+- unpacked folder
+
+### `pipguard install` blocked my package
+
+Use report output to inspect reasons. If you intentionally want non-blocking mode:
+
+```bash
+pipguard install <spec> --policy warn
+```
+
+Or explicit override (use with caution):
+
+```bash
+pipguard install <spec> --allow-high
+pipguard install <spec> --allow-critical
+```
+
+### `doctor` shows many findings in a dev-heavy environment
+
+This can happen in large environments with many tooling packages. Start with:
+
+```bash
+pipguard doctor --json-out doctor-report.json
+```
+
+Then review high/critical findings first and isolate suspicious startup hooks (`.pth`, `sitecustomize.py`, `usercustomize.py`).
+
+### Need help?
+
+Contact: **start@atomsai.com**
 
 ## Architecture
 
