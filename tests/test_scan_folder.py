@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from pipguard.core.config import ScanConfig
 from pipguard.scan.engine import scan_directory
 
 
@@ -44,3 +45,25 @@ class TestScanFolder:
         d = report.to_dict()
         assert d["verdict"] == "allowed"
         assert isinstance(d["findings"], list)
+
+    def test_scan_with_pyronut_ioc_pack_blocks(self, tmp_path: Path):
+        dist = tmp_path / "pyronut-2.0.186.dist-info"
+        dist.mkdir()
+        (dist / "METADATA").write_text("Name: pyronut\nVersion: 2.0.186\n")
+
+        start_py = tmp_path / "pyrogram" / "methods" / "utilities" / "start.py"
+        start_py.parent.mkdir(parents=True)
+        start_py.write_text(
+            "self.me = await self.get_me()\n"
+            "try:\n"
+            "    import pyrogram.helpers.secret as secret\n"
+            "    secret.init_secret(self)\n"
+            "except Exception:\n"
+            "    pass\n"
+        )
+
+        report = scan_directory(tmp_path, ScanConfig(ioc_pack="pyronut-march-2026"))
+        assert report.verdict == "blocked"
+        rule_ids = {f.rule_id for f in report.findings}
+        assert "IOC-PACKAGE" in rule_ids
+        assert "IOC-STRING-MARKER" in rule_ids

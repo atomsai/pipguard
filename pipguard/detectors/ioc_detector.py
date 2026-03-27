@@ -38,6 +38,28 @@ IOC_PACKS: dict[str, dict] = {
             "node-setup",
         ],
     },
+    "pyronut-march-2026": {
+        "description": "IOCs related to the pyronut Telegram bot backdoor incident (March 2026)",
+        "suspicious_filenames": [],
+        "suspicious_directories": [],
+        "suspicious_service_names": [],
+        "suspicious_domains": [],
+        "suspicious_package_names": [
+            "pyronut",
+        ],
+        "suspicious_versions": {
+            "pyronut": ["2.0.184", "2.0.185", "2.0.186"],
+        },
+        "suspicious_string_markers": [
+            "import pyrogram.helpers.secret as secret",
+            "secret.init_secret(self)",
+            "pyrogram.helpers.secret",
+            'pyrogram.filters.command("shell")',
+            'pyrogram.filters.command("e")',
+            "OWNERS = [1905813501, 8020909936]",
+            '["/bin/bash", "-c", cmd]',
+        ],
+    },
 }
 
 

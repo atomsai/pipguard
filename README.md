@@ -205,6 +205,7 @@ pipguard scan ./suspect-package --ioc litellm-march-2026
 
 Available packs:
 - `litellm-march-2026` — IOCs related to the litellm supply chain incident
+- `pyronut-march-2026` — IOCs related to the pyronut Telegram bot backdoor incident
 
 ## Environment Profiles for `run`
 
@@ -402,7 +403,7 @@ Each detector is independent and composable. The `chain_correlator` upgrades sev
 - [ ] GitHub Actions integration
 - [ ] Pre-commit hook
 - [ ] Package allowlist/denylist persistence
-- [ ] Additional IOC packs
+- [x] Additional IOC packs
 
 ## Future Improvements In Progress
 
