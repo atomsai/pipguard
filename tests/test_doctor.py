@@ -3,13 +3,18 @@
 import tempfile
 from pathlib import Path
 
-from pipguard.detectors.ioc_detector import detect_ioc_in_directory, get_pack
+from pipguard.detectors.ioc_detector import detect_ioc_in_directory, get_pack, list_packs
 from pipguard.doctor.env_inspector import inspect_site_packages
 from pipguard.doctor.rotation_advice import build_next_steps
 from pipguard.models.finding import Finding
 
 
 class TestDoctor:
+    def test_ioc_pack_registry_includes_pyronut(self):
+        packs = list_packs()
+        assert "litellm-march-2026" in packs
+        assert "pyronut-march-2026" in packs
+
     def test_clean_site_packages(self, tmp_path: Path):
         """An empty site-packages should produce no findings."""
         (tmp_path / "good_package").mkdir()
@@ -87,3 +92,28 @@ class TestDoctor:
         assert pack is not None
         findings = detect_ioc_in_directory(tmp_path, pack)
         assert any(f.rule_id == "IOC-WHEEL-META" for f in findings)
+
+    def test_ioc_pyronut_package_version_match_from_dist_metadata(self, tmp_path: Path):
+        dist = tmp_path / "pyronut-2.0.186.dist-info"
+        dist.mkdir()
+        (dist / "METADATA").write_text("Name: pyronut\nVersion: 2.0.186\n")
+        pack = get_pack("pyronut-march-2026")
+        assert pack is not None
+        findings = detect_ioc_in_directory(tmp_path, pack)
+        assert any(f.rule_id == "IOC-PACKAGE" for f in findings)
+
+    def test_ioc_pyronut_runtime_marker_match(self, tmp_path: Path):
+        target = tmp_path / "pyrogram" / "methods" / "utilities" / "start.py"
+        target.parent.mkdir(parents=True)
+        target.write_text(
+            "self.me = await self.get_me()\n"
+            "try:\n"
+            "    import pyrogram.helpers.secret as secret\n"
+            "    secret.init_secret(self)\n"
+            "except Exception:\n"
+            "    pass\n"
+        )
+        pack = get_pack("pyronut-march-2026")
+        assert pack is not None
+        findings = detect_ioc_in_directory(tmp_path, pack)
+        assert any(f.rule_id == "IOC-STRING-MARKER" for f in findings)

@@ -27,3 +27,11 @@ Initial public MVP release.
 - Local smoke checks include:
   - `pipx` install + run validation
   - `uvx` run validation for benign and malicious fixture scans
+
+## Unreleased
+
+### Added
+- New IOC pack: `pyronut-march-2026` for the March 2026 `pyronut` Telegram bot backdoor campaign.
+- IOC markers for known malicious package/version combinations (`pyronut` 2.0.184/2.0.185/2.0.186).
+- IOC string markers for runtime backdoor activation patterns (`pyrogram.helpers.secret`, `secret.init_secret(self)`, attacker command handlers, and `/bin/bash -c` execution path).
+- Test coverage for IOC registry listing and pyronut IOC matching in both direct detector tests and end-to-end scan engine tests.
